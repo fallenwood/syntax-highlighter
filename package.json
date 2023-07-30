@@ -1,10 +1,10 @@
 {
-    "name": "syntax-highlighter",
-    "displayName": "Syntax Highlighter",
+    "name": "syntax-highlighter-new",
+    "displayName": "Syntax Highlighter (New)",
     "description": "Syntax highlighting based on Tree-sitter",
-    "homepage": "https://github.com/EvgeniyPeshkov/syntax-highlighter",
-    "version": "0.5.1",
-    "publisher": "evgeniypeshkov",
+    "homepage": "https://github.com/fallenwood/syntax-highlighter",
+    "version": "0.5.2",
+    "publisher": "fallenwood",
     "license": "MIT",
     "icon": "images/syntax.png",
     "galleryBanner": {
@@ -12,11 +12,11 @@
         "theme": "dark"
     },
     "repository": {
-        "url": "https://github.com/EvgeniyPeshkov/syntax-highlighter"
+        "url": "https://github.com/fallenwood/syntax-highlighter"
     },
     "author": {
-        "name": "Evgeniy Peshkov",
-        "email": "peshkov.e@outlook.com"
+        "name": "Fallenwood",
+        "email": "fallenwood.y@outlook.com"
     },
     "categories": [
         "Programming Languages",
@@ -78,7 +78,7 @@
         "postinstall": "node ./scripts/build.js"
     },
     "engines": {
-        "vscode": "^1.80.0"
+        "@vscode/vsce": "^1.80.0"
     },
     "dependencies": {
         "jsonc-parser": "^2.2.1",
