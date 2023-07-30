@@ -187,15 +187,21 @@ class TokensProvider implements vscode.DocumentSemanticTokensProvider, vscode.Ho
     constructor() {
         // Terms
         const availableTerms: string[] = [
-            "type", "scope", "function", "variable", "number", "string", "comment",
+            "type",
+            "scope",
+            "function", "variable", "number", "string", "comment",
             "constant", "directive", "control", "operator", "modifier", "punctuation",
         ];
+ 
         const enabledTerms: string[] = vscode.workspace.
             getConfiguration("syntax").get("highlightTerms");
+
         availableTerms.forEach(term => {
-            if (enabledTerms.includes(term))
+            if (enabledTerms.includes(term)) {
                 this.supportedTerms.push(term);
+            }
         });
+
         if (!vscode.workspace.getConfiguration("syntax").get("highlightComment"))
             if (this.supportedTerms.includes("comment"))
                 this.supportedTerms.splice(this.supportedTerms.indexOf("comment"), 1);
@@ -305,6 +311,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Languages
     let availableGrammars: string[] = [];
+
     fs.readdirSync(__dirname + "/../grammars/").forEach(name => {
         availableGrammars.push(path.basename(name, ".json"));
     });

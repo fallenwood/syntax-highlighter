@@ -15,7 +15,8 @@ const langMap = {
     typescript: ["typescript", "typescript"],
     typescriptreact: ["typescript", "tsx"],
     ocaml: ["ocaml", "ocaml"],
-    shellscript: ["bash"]
+    shellscript: ["bash"],
+    "c-sharp": ["csharp"],
 }
 
 // Build wasm parsers for supported languages
