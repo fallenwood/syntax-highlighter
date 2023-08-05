@@ -1,7 +1,7 @@
 {
-    "name": "syntax-highlighter-fork",
-    "displayName": "Syntax Highlighter (fork)",
-    "description": "Syntax highlighting based on Tree-sitter forked",
+    "name": "vscode-tree-sitter",
+    "displayName": "New Syntax Highlighter",
+    "description": "Syntax highlighting based on Tree-sitter",
     "homepage": "https://github.com/fallenwood/syntax-highlighter",
     "version": "0.6.0",
     "publisher": "fallenwood",
