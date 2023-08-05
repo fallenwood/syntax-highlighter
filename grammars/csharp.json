@@ -274,7 +274,7 @@
       "event_declaration > identifier": "type",
 
       "for_each_statement > \"in\"": "control",
-      "for_each_statement >  identifier[-2] ": "parameter",
+      "for_each_statement > identifier[-2]": "parameter",
 
       // Contextual keywords
       "accessor_list > accessor_declaration > \"add\"": "parameter",

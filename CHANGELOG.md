@@ -3,11 +3,12 @@
 ## **Version 0.6.0**
 
 ### Changes
+* Forked by [fallenwood](https://github.com/fallenwood)
 * Update *tree-sitter* core and parsers.
 * Add *tree-sitter-c-sharp* parser
 * More output info when running `build.js`
 * Refactor codes
-
+* Add *Contributing.md*
 
 ## **Version 0.5.1**
 #### Changes:
