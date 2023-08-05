@@ -1,0 +1,173 @@
+{
+  "simpleTerms": {
+    // types
+    "type_identifier": "type",
+    "primitive_type": "type",
+    "\"signed\"": "type",
+    "\"unsigned\"": "type",
+    "\"short\"": "type",
+    "\"long\"": "type",
+    "\"bool\"": "type",
+
+    // variables
+    "statement_identifier": "variable",
+
+    // modifiers
+    "\"const\"": "modifier",
+    "\"static\"": "modifier",
+    "\"extern\"": "modifier",
+    "\"inline\"": "modifier",
+    "\"volatile\"": "modifier",
+    "\"var\"": "modifier",
+    "\"extends\"": "modifier",
+    "\"public\"": "modifier",
+    "\"private\"": "modifier",
+    "\"protected\"": "modifier",
+    "\"internal\"": "modifier",
+    "\"readonly\"": "modifier",
+    "function_specifier": "modifier",
+
+    // numbers
+    "number_literal": "number",
+
+    // strings
+    "char_literal": "string",
+    "string_literal": "string",
+    "system_lib_string": "string",
+    "escape_sequence": "string",
+
+    // comments
+    "comment": "comment",
+
+    // constants
+    "null": "constant",
+    "true": "constant",
+    "false": "constant",
+
+    // controls
+    "\"if\"": "control",
+    "\"else\"": "control",
+    "\"do\"": "control",
+    "\"for\"": "control",
+    "\"while\"": "control",
+    "\"break\"": "control",
+    "\"continue\"": "control",
+    "\"goto\"": "control",
+    "\"foreach\"": "control",
+
+    "\"switch\"": "control",
+    "\"case\"": "control",
+    "\"default\"": "control",
+
+    "\"return\"": "control",
+    "\"yield\"": "control",
+
+    "\"try\"": "control",
+    "\"throw\"": "control",
+    "\"catch\"": "control",
+    "\"finally\"": "control",
+
+    "\"struct\"": "control",
+    "\"record\"": "control",
+    "\"class\"": "control",
+    "\"enum\"": "control",
+
+    // operators
+    "\".\"": "operator",
+    "\"->\"": "operator",
+    "\"*\"": "operator",
+    "\"-\"": "operator",
+    "\"+\"": "operator",
+    "\"/\"": "operator",
+    "\"%\"": "operator",
+    "\"++\"": "operator",
+    "\"--\"": "operator",
+    "\"==\"": "operator",
+    "\"!\"": "operator",
+    "\"!=\"": "operator",
+    "\"<\"": "operator",
+    "\">\"": "operator",
+    "\">=\"": "operator",
+    "\"<=\"": "operator",
+    "\"&&\"": "operator",
+    "\"||\"": "operator",
+    "\"&\"": "operator",
+    "\"|\"": "operator",
+    "\"^\"": "operator",
+    "\"~\"": "operator",
+    "\"<<\"": "operator",
+    "\">>\"": "operator",
+    "\"=\"": "operator",
+    "\"+=\"": "operator",
+    "\"-=\"": "operator",
+    "\"*=\"": "operator",
+    "\"/=\"": "operator",
+    "\"%=\"": "operator",
+    "\"<<=\"": "operator",
+    "\">>=\"": "operator",
+    "\"&=\"": "operator",
+    "\"^=\"": "operator",
+    "\"|=\"": "operator",
+    "\"?\"": "operator",
+    "\":\"": "operator",
+
+    "\"with\"": "operator",
+    "\"new\"": "operator",
+    "\"typeof\"": "operator",
+    "\"sizeof\"": "operator",
+    "\"is\"": "operator",
+    "\"as\"": "operator",
+    "\"and\"": "operator",
+    "\"or\"": "operator",
+    "\"not\"": "operator",
+    "\"stackalloc\"": "operator",
+    "\"in\"": "operator",
+    "\"out\"": "operator",
+    "\"ref\"": "operator",
+
+    // directives
+    "\"#if\"": "directive",
+    "\"#ifdef\"": "directive",
+    "\"#ifndef\"": "directive",
+    "\"#elif\"": "directive",
+    "\"#else\"": "directive",
+    "\"#endif\"": "directive",
+    "\"#define\"": "directive",
+
+    // punctuations
+    "\";\"": "punctuation",
+    "\"[\"": "punctuation",
+    "\"]\"": "punctuation",
+    "\",\"": "punctuation",
+    "\"{\"": "punctuation",
+    "\"}\"": "punctuation",
+    "\"(\"": "punctuation",
+    "\")\"": "punctuation"
+  },
+
+  // Picked from Typescript
+  "complexTerms": ["identifier", "property_identifier", "super"],
+
+  "complexScopes": {
+      "class > identifier": "type",
+      "struct > identifier": "type",
+      "record > identifier": "type",
+      "new_expression > call_expression > identifier": "type",
+
+      "nested_type_identifier > identifier": "scope",
+
+      "identifier": "variable",
+      "property_identifier": "variable",
+      "member_expression > property_identifier": "variable",
+      "jsx_attribute > property_identifier": "variable",
+
+      "call_expression > identifier": "function",
+      "call_expression > base": "function",
+      "function > identifier": "function",
+      "generator_function > identifier": "function",
+      "method_definition > property_identifier": "function",
+      "call_expression > member_expression > property_identifier": "function",
+      "method_signature > property_identifier": "function",
+      "function_signature > identifier": "function"
+  }
+}
