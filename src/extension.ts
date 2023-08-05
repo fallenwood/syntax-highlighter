@@ -27,8 +27,8 @@ function buildLegend() {
     termMap.set("parameter_type", { type : "support", modifiers: [ "type" ] });
 
     // Tokens and modifiers in use
-    let tokens: string[] = [];
-    let modifiers: string[] = [];
+    const tokens: string[] = [];
+    const modifiers: string[] = [];
     termMap.forEach(t => {
         if (!tokens.includes(t.type)) {
             tokens.push(t.type);
@@ -51,19 +51,19 @@ const legend = buildLegend();
 export async function activate(context: vscode.ExtensionContext) {
 
     // Languages
-    let availableGrammars: string[] = [];
+    const availableGrammars: string[] = [];
     fs.readdirSync(__dirname + "/../grammars/").forEach(name => {
         availableGrammars.push(path.basename(name, ".json"));
     });
 
-    let availableParsers: string[] = [];
+    const availableParsers: string[] = [];
     fs.readdirSync(__dirname + "/../parsers/").forEach(name => {
         availableParsers.push(path.basename(name, ".wasm"));
     });
 
     const enabledLangs: string[] =
         vscode.workspace.getConfiguration("syntax").get("highlightLanguages")!;
-    let supportedLangs: { language: string }[] = [];
+    const supportedLangs: { language: string }[] = [];
     availableGrammars.forEach(lang => {
         if (availableParsers.includes(lang) && enabledLangs.includes(lang)) {
             supportedLangs.push({ language: lang });

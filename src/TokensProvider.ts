@@ -39,6 +39,7 @@ export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vs
   // Provide document tokens
   async provideDocumentSemanticTokens(
     doc: vscode.TextDocument,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     token: vscode.CancellationToken): Promise<vscode.SemanticTokens> {
     // Grammar
     const lang = doc.languageId;
@@ -99,6 +100,7 @@ export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vs
   async provideHover(
     doc: vscode.TextDocument,
     pos: vscode.Position,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     token: vscode.CancellationToken): Promise<vscode.Hover | null> {
     const uri = doc.uri.toString();
     if (!(uri in this.trees))
@@ -108,7 +110,7 @@ export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vs
 
     const xy: parser.Point = { row: pos.line, column: pos.character };
 
-    let node = tree.rootNode.descendantForPosition(xy);
+    const node = tree.rootNode.descendantForPosition(xy);
 
     if (!node) {
       return null;
@@ -160,7 +162,7 @@ export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vs
 
       type = `${type}[${index}][${rindex}]`;
 
-      let orderScopes: string[] = [];
+      const orderScopes: string[] = [];
 
       for (let i = 0; i < scopes.length; i++) {
         orderScopes.push(

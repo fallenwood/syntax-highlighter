@@ -11,7 +11,7 @@ const parserPromise = parser.init();
 
 export class Grammar {
   // Parser
-  parser: parser | any;
+  parser: parser | undefined;
 
   // Grammar
   readonly simpleTerms: { [sym: string]: string } = {};
@@ -31,7 +31,7 @@ export class Grammar {
     }
 
     for (const t in grammarJson.complexTerms) {
-      this.complexTerms[t as any] = grammarJson.complexTerms[t];
+      this.complexTerms[t as never] = grammarJson.complexTerms[t];
     }
 
     for (const t in grammarJson.complexScopes) {
@@ -58,21 +58,21 @@ export class Grammar {
     // Load wasm parser
     await parserPromise;
     this.parser = new parser();
-    let langFile = path.join(__dirname, "../parsers", this.lang + ".wasm");
+    const langFile = path.join(__dirname, "../parsers", this.lang + ".wasm");
     const langObj = await parser.Language.load(langFile);
     this.parser.setLanguage(langObj);
   }
 
   // Build syntax tree
   tree(doc: string) {
-    return this.parser.parse(doc);
+    return this.parser!.parse(doc);
   }
 
   // Parse syntax tree
   parse(tree: parser.Tree) {
     // Travel tree and peek terms
-    let terms: { term: string; range: vscode.Range }[] = [];
-    let stack: parser.SyntaxNode[] = [];
+    const terms: { term: string; range: vscode.Range }[] = [];
+    const stack: parser.SyntaxNode[] = [];
     let node = tree.rootNode.firstChild as parser.SyntaxNode | null | undefined;
 
     while (stack.length > 0 || node) {
@@ -85,7 +85,7 @@ export class Grammar {
       else {
         node = stack.pop()!;
 
-        let type = getNodeType(node);
+        const type = getNodeType(node);
 
         // Simple one-level terms
         let term: string | undefined = undefined;
@@ -130,7 +130,7 @@ export class Grammar {
               sibling = sibling.nextSibling;
             }
 
-            let orderScopes: string[] = [];
+            const orderScopes: string[] = [];
 
             for (let i = 0; i < scopes.length; i++) {
               orderScopes.push(
