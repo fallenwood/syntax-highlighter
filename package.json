@@ -1,5 +1,5 @@
 {
-    "name": "vscode-tree-sitter",
+    "name": "syntax-highlighter-ng",
     "displayName": "New Syntax Highlighter",
     "description": "Syntax highlighting based on Tree-sitter",
     "homepage": "https://github.com/fallenwood/syntax-highlighter",
