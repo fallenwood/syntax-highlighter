@@ -22,18 +22,26 @@ function buildLegend() {
     termMap.set("operator", { type: "operator" });
     termMap.set("modifier", { type: "type", modifiers: ["modification"] });
     termMap.set("punctuation", { type: "punctuation" });
+    termMap.set("async", { type: "keyword", modifiers: [ "async" ] });
+    termMap.set("parameter", { type : "parameter", modifiers: [ "declaration" ] });
+    termMap.set("parameter_type", { type : "support", modifiers: [ "type" ] });
+
     // Tokens and modifiers in use
     let tokens: string[] = [];
     let modifiers: string[] = [];
     termMap.forEach(t => {
-        if (!tokens.includes(t.type))
+        if (!tokens.includes(t.type)) {
             tokens.push(t.type);
+        }
+
         t.modifiers?.forEach(m => {
-            if (!modifiers.includes(m))
+            if (!modifiers.includes(m)) {
                 modifiers.push(m);
+            }
         });
     });
     // Construct semantic token legend
+
     return new vscode.SemanticTokensLegend(tokens, modifiers);
 }
 
@@ -57,15 +65,18 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.workspace.getConfiguration("syntax").get("highlightLanguages")!;
     let supportedLangs: { language: string }[] = [];
     availableGrammars.forEach(lang => {
-        if (availableParsers.includes(lang) && enabledLangs.includes(lang))
+        if (availableParsers.includes(lang) && enabledLangs.includes(lang)) {
             supportedLangs.push({ language: lang });
+        }
     });
 
     const engine = new TokensProvider(legend, termMap);
 
     context.subscriptions.push(
         vscode.languages.registerDocumentSemanticTokensProvider(
-            supportedLangs, engine, legend));
+            supportedLangs,
+            engine,
+            legend));
 
     // Register debug hover providers
     // Very useful tool for implementation and fixing of grammars

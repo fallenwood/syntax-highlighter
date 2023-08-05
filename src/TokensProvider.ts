@@ -4,26 +4,6 @@ import * as parser from 'web-tree-sitter';
 import { Grammar } from './Grammar';
 import { getNodeType } from './common';
 
-
-const dig = (node: parser.SyntaxNode, depth: number) => {
-  let type = getNodeType(node);
-
-  let parent = node.parent;
-
-  for (let i = 0; i < depth && parent; i++) {
-    const parentType = getNodeType(parent);
-
-    type = `${parentType} > ${type}`;
-    parent = parent.parent;
-  }
-
-  return {
-    type,
-    parent
-  };
-};
-
-
 // Semantic token provider
 export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vscode.HoverProvider {
   readonly grammars: { [lang: string]: Grammar } = {};
@@ -38,6 +18,7 @@ export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vs
     const availableTerms: string[] = [
       "type", "scope", "function", "variable", "number", "string", "comment",
       "constant", "directive", "control", "operator", "modifier", "punctuation",
+      "async", "parameter",
     ];
     const enabledTerms: string[] = vscode.workspace.
       getConfiguration("syntax").get("highlightTerms")!;
@@ -45,9 +26,13 @@ export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vs
       if (enabledTerms.includes(term))
         this.supportedTerms.push(term);
     });
-    if (!vscode.workspace.getConfiguration("syntax").get("highlightComment"))
-      if (this.supportedTerms.includes("comment"))
+
+    if (!vscode.workspace.getConfiguration("syntax").get("highlightComment")) {
+      if (this.supportedTerms.includes("comment")) {
         this.supportedTerms.splice(this.supportedTerms.indexOf("comment"), 1);
+      }
+    }
+
     this.debugDepth = vscode.workspace.getConfiguration("syntax").get("debugDepth")!;
   }
 
@@ -131,7 +116,26 @@ export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vs
 
     const depth = Math.max(grammar.complexDepth, this.debugDepth);
 
-    let { type } = dig(node, depth);
+    let type = getNodeType(node);
+
+    // TODO(fallenwood): merge similar codes
+    let term: string | undefined;
+    const isComplex = grammar.complexTerms.includes(type);
+
+    if (!isComplex) {
+      term = grammar.simpleTerms[type];
+    }
+
+    let parent = node.parent;
+    let scopes = [type];
+
+    for (let i = 0; i < depth && parent; i++) {
+      const parentType = getNodeType(parent);
+
+      type = `${parentType} > ${type}`;
+      scopes.push(type);
+      parent = parent.parent;
+    }
 
     // If there is also order complexity
     if (grammar.complexOrder) {
@@ -154,11 +158,30 @@ export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vs
         sibling = sibling.nextSibling;
       }
 
-      type = type + "[" + index + "]" + "[" + rindex + "]";
+      type = `${type}[${index}][${rindex}]`;
+
+      let orderScopes: string[] = [];
+
+      for (let i = 0; i < scopes.length; i++) {
+        orderScopes.push(
+          scopes[i],
+          `${scopes[i]}[${index}]`,
+          `${scopes[i]}[${rindex}]`);
+      }
+
+      scopes = orderScopes;
     }
 
+    if (isComplex) {
+      // Use most complex scope
+      for (const d of scopes) {
+        if (d in grammar.complexScopes) {
+          term = grammar.complexScopes[d];
+        }
+      }}
+
     return {
-      contents: [type],
+      contents: [type, `Term: ${term || ""}`],
       range: new vscode.Range(
         node.startPosition.row, node.startPosition.column,
         node.endPosition.row, node.endPosition.column)

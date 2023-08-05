@@ -123,8 +123,10 @@ export class Grammar {
             sibling = node.nextSibling;
 
             while (sibling) {
-              if (sibling.type === node.type)
+              if (sibling.type === node.type) {
                 rindex--;
+              }
+
               sibling = sibling.nextSibling;
             }
 

@@ -47,7 +47,7 @@
     "comment": "comment",
 
     // constants
-    "null": "constant",
+    "null_literal": "constant",
     "true": "constant",
     "false": "constant",
 
@@ -78,6 +78,7 @@
     "\"record\"": "control",
     "\"class\"": "control",
     "\"enum\"": "control",
+    "\"base\"": "type",
 
     "\"lock\"": "control",
 
@@ -206,14 +207,16 @@
   ],
 
   "complexScopes": {
+      "predefined_type": "keyword",
+
       "type_constraint > qualified_name > identifier": "type",
 
-      "type_parameter_constraint > \"notnull\"": "modifier",
-      "type_parameter_constraint > \"class\"": "modifier",
-      "type_parameter_constraint > \"struct\"": "modifier",
-      "type_parameter_constraint > \"unmanaged\"": "modifier",
-      "type_parameter_constraint > \"default\"": "modifier",
-      "type_parameter_constraint > constructor_constraint > \"new\"": "modifier",
+      "type_parameter_constraint > \"notnull\"": "type",
+      "type_parameter_constraint > \"class\"": "type",
+      "type_parameter_constraint > \"struct\"": "type",
+      "type_parameter_constraint > \"unmanaged\"": "type",
+      "type_parameter_constraint > \"default\"": "type",
+      "type_parameter_constraint > constructor_constraint > \"new\"": "type",
       "type_parameter_constraint > type_constraint > identifier": "type",
 
       "nested_type_identifier > identifier": "scope",
@@ -228,41 +231,57 @@
       "object_creation_expression > identifier": "type",
 
       "type_parameter_list > type_parameter > identifier": "type",
-      "class_declaration > type_parameter_constraints_clause > identifier": "type",
-      "struct_declaration > type_parameter_constraints_clause > identifier": "type",
-      "record_declaration > type_parameter_constraints_clause > identifier": "type",
-      "method_declaration > type_parameter_constraints_clause > identifier": "type",
+      "type_parameter_constraints_clause > identifier[-1]": "type",
+
+      "delegate_declaration > identifier[-2]": "type",
 
       "parameter_list > parameter > identifier[-2]": "type",
-      "method_declaration > identifier[-2]": "type",
+      "parameter_list > parameter > identifier[-1]": "parameter",
+      "parameter_list > identifier[-1]": "parameter",
+      "parameter > nullable_type > identifier[-1]": "type",
       "constructor_declaration > identifier[-1]": "type",
       "catch_declaration > identifier[-2]": "type",
-      "variable_declaration > identifier": "type",
+      "catch_declaration > identifier[-1]": "parameter",
       "generic_name > identifier": "type",
       "generic_name > type_argument_list > identifier": "type",
+
+      "method_declaration > identifier[-2]": "type",
+      "method_declaration > identifier[-1]": "variable",
+
+      "variable_declaration > generic_name > identifier": "type",
+      "variable_declaration > generic_name > type_argument_list > identifier": "type",
+      "variable_declaration > identifier": "type",
+
       "record_declaration > identifier": "type",
       "class_declaration > identifier": "type",
       "struct_declaration > identifier": "type",
+      "interface_declaration > identifier": "type",
+      "delegate_declaration > identifier": "type",
+
       "base_list > identifier": "type",
       "using_directive > identifier": "type",
       "using_directive > name_equals > identifier": "type",
       "explicit_interface_specifier > identifier": "type",
       "member_access_expression > predefined_type": "type",
+
       "function_pointer_parameter > identifier": "type",
 
       "attribute_list > attribute > identifier": "type",
+      "name_colon > identifier": "parameter",
 
       "member_access_expression > identifier[0]": "variable",
-      "initializer_expression > assignment_expression > identifier": "variable",
+      "initializer_expression > assignment_expression > identifier": "parameter",
+      "event_declaration > identifier": "type",
 
       "for_each_statement > \"in\"": "control",
+      "for_each_statement >  identifier[-2] ": "parameter",
 
       // Contextual keywords
-      "accessor_list > accessor_declaration > \"add\"": "keyword",
-      "accessor_list > accessor_declaration > \"remove\"": "keyword",
-      "accessor_list > accessor_declaration > \"get\"": "keyword",
-      "accessor_list > accessor_declaration > \"set\"": "keyword",
-      "accessor_list > accessor_declaration > \"init\"": "keyword",
+      "accessor_list > accessor_declaration > \"add\"": "parameter",
+      "accessor_list > accessor_declaration > \"remove\"": "parameter",
+      "accessor_list > accessor_declaration > \"get\"": "parameter",
+      "accessor_list > accessor_declaration > \"set\"": "parameter",
+      "accessor_list > accessor_declaration > \"init\"": "parameter",
 
       "variable_declaration > identifier > \"alias\"": "modifier",
       "from_clause > \"from\"": "modifier",
@@ -280,10 +299,10 @@
       "let_clause > \"let\"": "modifier",
       "where_clause > \"where\"": "modifier",
 
-      "method_declaration > modifier > \"async\"": "modifier",
-      "expression_statement > await_expression > \"await\"": "modifier",
+      "method_declaration > modifier > \"async\"": "async",
+      "expression_statement > await_expression > \"await\"": "async",
 
-      "alias_qualified_name > identifier > \"global\"": "modifier",
+      "alias_qualified_name > identifier > \"global\"": "parameter",
 
       "catch_clause > catch_filter_clause > \"when\"": "control",
 

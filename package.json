@@ -114,12 +114,6 @@
         "tree-sitter-typescript": "^0.20.1"
     },
     "contributes": {
-        "commands": [
-            {
-                "command": "zz.helloWorld",
-                "title": "Hello World"
-            }
-        ],
         "semanticTokenTypes": [
             {
                 "id": "punctuation",
@@ -183,7 +177,9 @@
                         "control",
                         "operator",
                         "modifier",
-                        "punctuation"
+                        "punctuation",
+                        "async",
+                        "parameter"
                     ]
                 },
                 "syntax.debugHover": {
