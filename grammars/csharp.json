@@ -1,13 +1,8 @@
 {
   "simpleTerms": {
     // types
-    "type_identifier": "type",
-    "primitive_type": "type",
-    "\"signed\"": "type",
-    "\"unsigned\"": "type",
-    "\"short\"": "type",
-    "\"long\"": "type",
-    "\"bool\"": "type",
+    "predefined_type": "keyword",
+    "\"operator\"": "type",
 
     // variables
     "statement_identifier": "variable",
@@ -16,25 +11,37 @@
     "\"const\"": "modifier",
     "\"static\"": "modifier",
     "\"extern\"": "modifier",
-    "\"inline\"": "modifier",
     "\"volatile\"": "modifier",
     "\"var\"": "modifier",
+    "\"delegate\"": "modifier",
+    "\"event\"": "modifier",
+    "\"implicit\"": "modifier",
+    "\"explicit\"": "modifier",
+    "\"dynamic\"": "modifier",
+    "\"notnull\"": "modifier",
+    "\"required\"": "modifier",
+
     "\"extends\"": "modifier",
+    "\"abstract\"": "modifier",
+    "\"virtual\"": "modifier",
+    "\"override\"": "modifier",
+    "\"sealed\"": "modifier",
     "\"public\"": "modifier",
     "\"private\"": "modifier",
     "\"protected\"": "modifier",
     "\"internal\"": "modifier",
     "\"readonly\"": "modifier",
+    "\"partial\"": "modifier",
     "function_specifier": "modifier",
 
     // numbers
-    "number_literal": "number",
+    "integer_literal": "number",
+    "real_literal": "number",
 
     // strings
     "char_literal": "string",
     "string_literal": "string",
-    "system_lib_string": "string",
-    "escape_sequence": "string",
+    "interpolated_string_text": "string",
 
     // comments
     "comment": "comment",
@@ -71,6 +78,13 @@
     "\"record\"": "control",
     "\"class\"": "control",
     "\"enum\"": "control",
+
+    "\"lock\"": "control",
+
+    "\"checked\"": "control",
+    "\"unchecked\"": "control",
+    "\"unsafe\"": "control",
+    "\"fixed\"": "control",
 
     // operators
     "\".\"": "operator",
@@ -115,6 +129,7 @@
     "\"new\"": "operator",
     "\"typeof\"": "operator",
     "\"sizeof\"": "operator",
+    "\"nameof\"": "operator",
     "\"is\"": "operator",
     "\"as\"": "operator",
     "\"and\"": "operator",
@@ -133,6 +148,9 @@
     "\"#else\"": "directive",
     "\"#endif\"": "directive",
     "\"#define\"": "directive",
+    "\"#region\"": "directive",
+    "\"#endregion\"": "directive",
+
 
     // punctuations
     "\";\"": "punctuation",
@@ -146,28 +164,134 @@
   },
 
   // Picked from Typescript
-  "complexTerms": ["identifier", "property_identifier", "super"],
+  "complexTerms": [
+    "identifier",
+    "property_identifier",
+    "super",
+    "predefined_type",
+    "\"add\"",
+    "\"remove\"",
+    "\"get\"",
+    "\"set\"",
+    "\"init\"",
+    "\"alias\"",
+    // linq
+    "\"from\"",
+    "\"orderby\"",
+    "\"in\"",
+    "\"select\"",
+    "\"ascending\"",
+    "\"descending\"",
+    "\"equals\"",
+    "\"on\"",
+    "\"join\"",
+    "\"async\"",
+    "\"await\"",
+    "\"global\"",
+    "\"group\"",
+    "\"by\"",
+    "\"into\"",
+    "\"when\"",
+    "\"where\"",
+    "\"notnull\"",
+    "\"unmanaged\"",
+    "\"class\"",
+    "\"struct\"",
+    "\"default\"",
+    "\"new\"",
+    "\"with\"",
+
+    // Not implemented
+    "\"file\"",
+  ],
 
   "complexScopes": {
-      "class > identifier": "type",
-      "struct > identifier": "type",
-      "record > identifier": "type",
-      "new_expression > call_expression > identifier": "type",
+      "type_constraint > qualified_name > identifier": "type",
+
+      "type_parameter_constraint > \"notnull\"": "modifier",
+      "type_parameter_constraint > \"class\"": "modifier",
+      "type_parameter_constraint > \"struct\"": "modifier",
+      "type_parameter_constraint > \"unmanaged\"": "modifier",
+      "type_parameter_constraint > \"default\"": "modifier",
+      "type_parameter_constraint > constructor_constraint > \"new\"": "modifier",
+      "type_parameter_constraint > type_constraint > identifier": "type",
 
       "nested_type_identifier > identifier": "scope",
 
       "identifier": "variable",
-      "property_identifier": "variable",
-      "member_expression > property_identifier": "variable",
-      "jsx_attribute > property_identifier": "variable",
 
-      "call_expression > identifier": "function",
-      "call_expression > base": "function",
-      "function > identifier": "function",
-      "generator_function > identifier": "function",
-      "method_definition > property_identifier": "function",
-      "call_expression > member_expression > property_identifier": "function",
-      "method_signature > property_identifier": "function",
-      "function_signature > identifier": "function"
-  }
+      // types
+      "class > identifier": "type",
+      "struct > identifier": "type",
+      "record > identifier": "type",
+
+      "object_creation_expression > identifier": "type",
+
+      "type_parameter_list > type_parameter > identifier": "type",
+      "class_declaration > type_parameter_constraints_clause > identifier": "type",
+      "struct_declaration > type_parameter_constraints_clause > identifier": "type",
+      "record_declaration > type_parameter_constraints_clause > identifier": "type",
+      "method_declaration > type_parameter_constraints_clause > identifier": "type",
+
+      "parameter_list > parameter > identifier[-2]": "type",
+      "method_declaration > identifier[-2]": "type",
+      "constructor_declaration > identifier[-1]": "type",
+      "catch_declaration > identifier[-2]": "type",
+      "variable_declaration > identifier": "type",
+      "generic_name > identifier": "type",
+      "generic_name > type_argument_list > identifier": "type",
+      "record_declaration > identifier": "type",
+      "class_declaration > identifier": "type",
+      "struct_declaration > identifier": "type",
+      "base_list > identifier": "type",
+      "using_directive > identifier": "type",
+      "using_directive > name_equals > identifier": "type",
+      "explicit_interface_specifier > identifier": "type",
+      "member_access_expression > predefined_type": "type",
+      "function_pointer_parameter > identifier": "type",
+
+      "attribute_list > attribute > identifier": "type",
+
+      "member_access_expression > identifier[0]": "variable",
+      "initializer_expression > assignment_expression > identifier": "variable",
+
+      "for_each_statement > \"in\"": "control",
+
+      // Contextual keywords
+      "accessor_list > accessor_declaration > \"add\"": "keyword",
+      "accessor_list > accessor_declaration > \"remove\"": "keyword",
+      "accessor_list > accessor_declaration > \"get\"": "keyword",
+      "accessor_list > accessor_declaration > \"set\"": "keyword",
+      "accessor_list > accessor_declaration > \"init\"": "keyword",
+
+      "variable_declaration > identifier > \"alias\"": "modifier",
+      "from_clause > \"from\"": "modifier",
+      "from_clause > \"in\"": "control",
+      "order_by_clause > \"orderby\"": "modifier",
+      "order_by_clause > \"ascending\"": "control",
+      "order_by_clause > \"descending\"": "control",
+      "select_clause > \"select\"": "modifier",
+      "join_clause > \"join\"": "modifier",
+      "join_clause > \"on\"": "control",
+      "join_clause > \"equals\"": "control",
+      "group_clause > \"group\"": "modifier",
+      "group_clause > \"by\"": "control",
+      "query_continuation > \"into\"": "modifier",
+      "let_clause > \"let\"": "modifier",
+      "where_clause > \"where\"": "modifier",
+
+      "method_declaration > modifier > \"async\"": "modifier",
+      "expression_statement > await_expression > \"await\"": "modifier",
+
+      "alias_qualified_name > identifier > \"global\"": "modifier",
+
+      "catch_clause > catch_filter_clause > \"when\"": "control",
+
+      "class_declaration > type_parameter_constraints_clause > \"where\"": "modifier",
+      "struct_declaration > type_parameter_constraints_clause > \"where\"": "modifier",
+      "record_declaration > type_parameter_constraints_clause > \"where\"": "modifier",
+      "method_declaration > type_parameter_constraints_clause > \"where\"": "modifier",
+
+      "with_expression > \"with\"": "modifier",
+    }
 }

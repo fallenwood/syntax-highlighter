@@ -1,5 +1,14 @@
 # Syntax Highlighter Change Log
 
+## **Version 0.6.0**
+
+### Changes
+* Update *tree-sitter* core and parsers.
+* Add *tree-sitter-c-sharp* parser
+* More output info when running `build.js`
+* Refactor codes
+
+
 ## **Version 0.5.1**
 #### Changes:
 * Update *tree-sitter* core and parsers.
