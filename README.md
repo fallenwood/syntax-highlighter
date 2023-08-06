@@ -3,13 +3,15 @@
 #### Syntax highlighter based on [Tree-Sitter](https://tree-sitter.github.io/tree-sitter/).
 #### Languages:
 #### C++, C, Python, TypeScript, TypeScriptReact, JavaScript,
-#### Go, Rust, Php, Ruby, ShellScript, Bash, OCaml, Lua
+#### Go, Rust, Php, Ruby, ShellScript, Bash, OCaml, Lua, C#, D
 
 ![demo](images/demo.gif)
 
 #### Languages:
 * C++
 * C
+* C#
+* D
 * Python
 * TypeScript
 * TypeScriptReact
@@ -141,7 +143,7 @@ All language parsers are
 [compiled to binary .wasm modules](https://github.com/tree-sitter/tree-sitter/tree/master/lib/binding_web#generate-wasm-language-files).
 To build .wasm you'll need Emscripten SDK. Refer to [BUILD.md](BUILD.md) for instructions.
 
-## [Contribute](CONTRIBUTING.md)
+## [Contribute](CONTRIBUTE.md)
 
 The best way to contribute is to implement support of new languages. Extension
 improvements are also welcome. Refer to [CONTRIBUTE.md](CONTRIBUTE.md) for details.

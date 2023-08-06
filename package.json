@@ -72,11 +72,11 @@
     "main": "./out/extension.js",
     "scripts": {
         "vscode:package": "./node_modules/.bin/vsce package",
-        "vscode:prepublish": "pnpm run compile",
+        "vscode:prepublish": "yarn run compile",
         "vscode:publish": "./node_modules/.bin/vsce publish",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "pretest": "pnpm run compile && pnpm run lint",
+        "pretest": "yarn run compile && yarn run lint",
         "lint": "eslint src --ext ts",
         "test": "node ./out/test/runTest.js",
         "postinstall": "ts-node ./scripts/build.ts"
