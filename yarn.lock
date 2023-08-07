@@ -2133,6 +2133,13 @@ tree-sitter-typescript@^0.20.1:
   dependencies:
     nan "^2.14.0"
 
+tree-sitter-vue@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/tree-sitter-vue/-/tree-sitter-vue-0.2.1.tgz#cc7078a67f9847457b583030076d37e9468de5e6"
+  integrity sha512-Uy6/ih87qJfoID5Z45Mb3qBqMuFfhnN5u6Ujgrmi/D6SyFIoZSZTAV97yxsejXFdcn4Vw3/XO+agk7ztIdhJLw==
+  dependencies:
+    nan "^2.14.0"
+
 ts-api-utils@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/ts-api-utils/-/ts-api-utils-1.0.1.tgz#8144e811d44c749cd65b2da305a032510774452d"
