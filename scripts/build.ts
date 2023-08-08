@@ -5,6 +5,12 @@ const fs = require('fs');
 const path = require('path');
 const os = require("os");
 
+let skipExising = true;
+
+if (process.argv.includes("--rebuild")) {
+  skipExising = false;
+}
+
 // Languages
 let langs: string[] = [];
 fs.readdirSync(__dirname + "/../grammars/").forEach((name: string) => {
@@ -59,6 +65,11 @@ for (let li of langs) {
     output = "tree-sitter-" + mapping.output + ".wasm";
   }
 
+  if (skipExising && fs.existsSync("parsers/" + lang + ".wasm")) {
+    console.log(`Skipping existing ${lang}.wasm`);
+    continue;
+  }
+
   console.log(`Compiling ${lang} parser with ${module} to ${output}`);
 
   if (!fs.existsSync(module)) {
@@ -105,7 +116,19 @@ for (let li of langs) {
       }
       buildWasm();
     });
-
+  } else if (lang === "fsharp"){
+    exec(`${executable} generate`, {
+      cwd: module,
+      env: {
+        ...process.env,
+        "CC": "clang++",
+      },
+    }, (err: any) => {
+      if (err) {
+        return console.error("Failed generate " + lang + ": " + err.message);
+      }
+      buildWasm();
+    });
   } else {
     buildWasm();
   }
