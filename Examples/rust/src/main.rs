@@ -5,9 +5,9 @@
 /// Documentation comments look like this and support markdown notation.
 /// # Examples
 ///
-/// 
+///
 /// let five = 5
-/// 
+///
 
 ///////////////
 // 1. Basics //
@@ -61,7 +61,7 @@ fn main() {
     println!("{} {}", f, x); // 1.3 hello world
 
     // A `String` – a heap-allocated string
-    // Stored as a `Vec<u8>` and always hold a valid UTF-8 sequence, 
+    // Stored as a `Vec<u8>` and always hold a valid UTF-8 sequence,
     // which is not null terminated.
     let s: String = "hello world".to_string();
 
@@ -182,7 +182,7 @@ fn main() {
     let another_foo = Foo { bar: 1 };
     println!("{:?}", another_foo.frobnicate()); // Some(1)
 
-    // Function pointer types // 
+    // Function pointer types //
 
     fn fibonacci(n: u32) -> u32 {
         match n {
@@ -308,8 +308,4 @@ fn main() {
     // ref_var2 is of type &mut i32, so stores a reference to an i32, not the value.
     // var2 = 2; // this would not compile because `var2` is borrowed.
     ref_var2; // no-op, but counts as a use and keeps the borrow active until here
-}
-
-fn main() {
-    println!("Hello, world!");
 }
