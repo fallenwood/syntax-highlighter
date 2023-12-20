@@ -45,7 +45,7 @@ It follows the current color theme out-of-the-box, as soon as the theme
 enables semantic colorization through its `semanticHighlighting` setting.
 You can forcefully enable semantic highlighting in `settings.json`:
 
-```json
+```jsonc
 "editor.semanticTokenColorCustomizations": {
     "enabled": true, // enable for all themes
     "[Default Dark+]": {
