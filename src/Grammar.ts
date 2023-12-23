@@ -22,21 +22,7 @@ export class Grammar {
 
   // Constructor
   constructor(private lang: string) {
-    // Parse grammar file
-    const grammarFile = __dirname + "/../grammars/" + lang + ".json";
-    const grammarJson = jsonc.parse(fs.readFileSync(grammarFile).toString());
-
-    for (const t in grammarJson.simpleTerms) {
-      this.simpleTerms[t] = grammarJson.simpleTerms[t];
-    }
-
-    for (const t in grammarJson.complexTerms) {
-      this.complexTerms[t as never] = grammarJson.complexTerms[t];
-    }
-
-    for (const t in grammarJson.complexScopes) {
-      this.complexScopes[t] = grammarJson.complexScopes[t];
-    }
+    this.loadGammar(lang);
 
     for (const s in this.complexScopes) {
       const depth = s.split(">").length;
@@ -51,6 +37,47 @@ export class Grammar {
     }
 
     this.complexDepth--;
+  }
+
+  private loadGammar(lang: string) {
+    // Parse grammar file
+    const grammarFile = __dirname + "/../grammars/" + lang + ".json";
+    const grammarJson = jsonc.parse(fs.readFileSync(grammarFile).toString());
+
+    this.loadGrammarInternal(grammarJson.basic);
+
+    // TODO: Check lsp status
+    if (false) {
+      this.loadGrammarInternal(grammarJson.full);
+    }
+  }
+
+  private loadGrammarInternal(grammarJson: any) {
+    for (const t in grammarJson.simpleTerms) {
+      if (this.simpleTerms[t] === undefined) {
+        this.simpleTerms[t] = grammarJson.simpleTerms[t];
+      } else {
+        this.simpleTerms[t].concat(grammarJson.simpleTerms[t]);
+      }
+    }
+
+    for (const t in grammarJson.complexTerms) {
+      const tn = t as never;
+      if (this.complexTerms[tn] === undefined) {
+        this.complexTerms[tn] = grammarJson.complexTerms[tn];
+      } else {
+        this.complexTerms[tn].concat(grammarJson.complexTerms[tn]);
+      }
+    }
+
+    for (const t in grammarJson.complexScopes) {
+      if (this.complexScopes[t] === undefined) {
+        this.complexScopes[t] = grammarJson.complexScopes[t];
+      } else {
+        this.complexScopes[t].concat(grammarJson.complexScopes[t]);
+      }
+    }
+
   }
 
   // Parser initialization
