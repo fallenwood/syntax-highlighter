@@ -29,7 +29,7 @@ const langMap = {
   typescriptreact: {
     module: ["typescript"],
     prebuilt: "tree-sitter-tsx.wasm",
-    output: "c_sharp",
+    output: "tsx",
   },
 } as any;
 
