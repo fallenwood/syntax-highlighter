@@ -49,7 +49,6 @@ const legend = buildLegend();
 
 // Extension activation
 export async function activate(context: vscode.ExtensionContext) {
-
     // Languages
     const availableGrammars: string[] = [];
     fs.readdirSync(__dirname + "/../grammars/").forEach(name => {
