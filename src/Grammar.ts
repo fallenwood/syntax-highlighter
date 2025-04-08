@@ -7,11 +7,11 @@ import * as path from 'path';
 import { getNodeType } from './common';
 
 // Grammar class
-const parserPromise = parser.init();
+const parserPromise = parser.Parser.init();
 
 export class Grammar {
   // Parser
-  parser: parser | undefined;
+  parser: parser.Parser | undefined;
 
   // Grammar
   readonly simpleTerms: { [sym: string]: string } = {};
@@ -57,7 +57,7 @@ export class Grammar {
   async init() {
     // Load wasm parser
     await parserPromise;
-    this.parser = new parser();
+    this.parser = new parser.Parser();
     const langFile = path.join(__dirname, "../parsers", this.lang + ".wasm");
     const langObj = await parser.Language.load(langFile);
     this.parser.setLanguage(langObj);
@@ -72,8 +72,8 @@ export class Grammar {
   parse(tree: parser.Tree) {
     // Travel tree and peek terms
     const terms: { term: string; range: vscode.Range }[] = [];
-    const stack: parser.SyntaxNode[] = [];
-    let node = tree.rootNode.firstChild as parser.SyntaxNode | null | undefined;
+    const stack: parser.Node[] = [];
+    let node = tree.rootNode.firstChild as parser.Node | null | undefined;
 
     while (stack.length > 0 || node) {
       // Go deeper

@@ -82,10 +82,11 @@ for (const lang of langs) {
 
   function buildWasm(callback?: any) {
     const prebuiltFullPath = path.join(module, prebuilt);
+    const wasmOutputFullPath = path.join(parsersDir, lang + ".wasm");
 
     if (fs.existsSync(prebuiltFullPath)) {
       console.log("[Prebuilt] Using prebuilt parser for " + lang);
-      fs.copyFileSync(prebuiltFullPath, path.join(parsersDir, output));
+      fs.copyFileSync(prebuiltFullPath, wasmOutputFullPath);
       return callback && callback();
     }
 
@@ -99,7 +100,7 @@ for (const lang of langs) {
 
         fs.rename(
           output,
-          path.join(parsersDir, lang + ".wasm"),
+          wasmOutputFullPath,
           (err: any) => {
             if (err) {
               console.error("[Compile] Failed to copy built parser: " + err.message);

@@ -52,8 +52,12 @@ export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vs
     // Parse document
     const grammar = this.grammars[lang];
     const tree = grammar.tree(doc.getText());
-    const terms = grammar.parse(tree);
-    this.trees[doc.uri.toString()] = tree;
+    let terms: any[] = [];
+
+    if (tree !== null) {
+      terms = grammar.parse(tree);
+      this.trees[doc.uri.toString()] = tree;
+    }
 
     // Build tokens
     const builder = new vscode.SemanticTokensBuilder(this.legend);
@@ -180,7 +184,8 @@ export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vs
         if (d in grammar.complexScopes) {
           term = grammar.complexScopes[d];
         }
-      }}
+      }
+    }
 
     return {
       contents: [type, `Term: ${term || ""}`],
