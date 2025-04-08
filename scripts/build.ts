@@ -13,24 +13,22 @@ fs.readdirSync(__dirname + "/../grammars/").forEach((name: string) => {
 
 // Language-package map
 const langMap = {
-  typescript: {
-    module: ["typescript", "typescript"],
-    output: "typescript",
+  csharp: {
+    module: ["c-sharp"],
+    prebuilt: "tree-sitter-c_sharp.wasm",
+    output: "c_sharp",
   },
-  typescriptreact: {
-    module: ["typescript", "tsx"],
-    output: "tsx",
-  },
-  ocaml: {
-    module: ["ocaml", "ocaml"],
-    output: "ocaml",
+  d: {
+    generate: true,
   },
   shellscript: {
     module: ["bash"],
+    prebuilt: "tree-sitter-bash.wasm",
     output: "bash",
   },
-  csharp: {
-    module: ["c-sharp"],
+  typescriptreact: {
+    module: ["typescript"],
+    prebuilt: "tree-sitter-tsx.wasm",
     output: "c_sharp",
   },
 } as any;
@@ -40,29 +38,37 @@ const parsersDir = path.resolve(path.join(__dirname, "..", "parsers"));
 if (!fs.existsSync(parsersDir)) {
   fs.mkdirSync(parsersDir);
 }
-for (let li of langs) {
-  const lang = li;
+for (const lang of langs) {
   let module = path.resolve(path.join(__dirname, "..", "node_modules", `tree-sitter-${lang}`));
   let output = "tree-sitter-" + lang + ".wasm";
+  let prebuilt = output;
 
-  let mapping = langMap[lang];
+  const mapping = langMap[lang];
 
   if (mapping) {
-    module = path.join(
-      __dirname,
-      "..",
-      "node_modules",
-      "tree-sitter-" + mapping.module[0],
-      ...mapping.module.slice(1),
-    );
+    if (mapping.module) {
+      module = path.join(
+        __dirname,
+        "..",
+        "node_modules",
+        "tree-sitter-" + mapping.module[0],
+        ...mapping.module.slice(1),
+      );
+    }
 
-    output = "tree-sitter-" + mapping.output + ".wasm";
+    if (mapping.output) {
+      output = "tree-sitter-" + mapping.output + ".wasm";
+    }
+
+    if (mapping.prebuilt) {
+      prebuilt = mapping.prebuilt;
+    }
   }
 
   console.log(`Compiling ${lang} parser with ${module} to ${output}`);
 
   if (!fs.existsSync(module)) {
-    console.error("No module found for " + lang);
+    console.error("[Missing] No module found for " + lang);
     continue;
   }
 
@@ -75,37 +81,45 @@ for (let li of langs) {
   executable = path.resolve(executable);
 
   function buildWasm(callback?: any) {
-    exec(`${executable} build-wasm ${module}`,
+    const prebuiltFullPath = path.join(module, prebuilt);
+
+    if (fs.existsSync(prebuiltFullPath)) {
+      console.log("[Prebuilt] Using prebuilt parser for " + lang);
+      fs.copyFileSync(prebuiltFullPath, path.join(parsersDir, output));
+      return callback && callback();
+    }
+
+    console.log("[Compile] No prebuilt parser found for " + lang + ", building from source");
+    exec(`${executable} build --wasm ${module}`,
       (err: any) => {
         if (err) {
-          console.error("Failed to build wasm for " + lang + ": " + err.message);
+          console.error("[Compile] Failed to build wasm for " + lang + ": " + err.message);
           return callback && callback(err);
         }
 
         fs.rename(
           output,
-          "parsers/" + lang + ".wasm",
+          path.join(parsersDir, lang + ".wasm"),
           (err: any) => {
             if (err) {
-              console.error("Failed to copy built parser: " + err.message);
+              console.error("[Compile] Failed to copy built parser: " + err.message);
               return callback && callback(err);
             }
-            console.log("Successfully compiled " + lang + " parser");
+            console.log("[Compile] Successfully compiled " + lang + " parser");
             callback && callback();
           });
       });
   }
 
-  if (lang === "d") {
+  if (mapping?.generate === true) {
     exec(`${executable} generate`, {
       cwd: module,
     }, (err: any) => {
       if (err) {
-        return console.error("Failed generate " + lang + ": " + err.message);
+        return console.error("[Generate] Failed to generate " + lang + ": " + err.message);
       }
       buildWasm();
     });
-
   } else {
     buildWasm();
   }

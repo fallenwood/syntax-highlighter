@@ -1,5 +1,13 @@
 # Syntax Highlighter Change Log
 
+## **Version 0.7.0**
+
+### Changes
+
+* Remove outdated d / lua / php language support
+* Update *tree-sitter* core and parsers.
+* Use prebuilt wasm package if present
+
 ## **Version 0.6.0**
 
 ### Changes
