@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
-import Parser = require('web-tree-sitter');
+import * as parser from 'web-tree-sitter';
 
 import { Grammar } from './Grammar';
 
 // Semantic token provider
 export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vscode.HoverProvider {
   readonly grammars: { [lang: string]: Grammar } = {};
-  readonly trees: { [doc: string]: Parser.Tree } = {};
+  readonly trees: { [doc: string]: parser.Tree } = {};
   readonly supportedTerms: string[] = [];
   readonly debugDepth: number;
 
@@ -107,7 +107,7 @@ export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vs
     const grammar = this.grammars[doc.languageId];
     const tree = this.trees[uri];
 
-    const xy: Parser.Point = { row: pos.line, column: pos.character };
+    const xy: parser.Point = { row: pos.line, column: pos.character };
 
     const node = tree.rootNode.descendantForPosition(xy);
 
@@ -115,8 +115,8 @@ export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vs
       return null;
     }
 
-    const depth = Math.max(grammar.complexDepth, this.debugDepth);
-    const term = grammar.resolveTerm(node, depth);
+    const depth = this.debugDepth < 0 ? Number.MAX_SAFE_INTEGER : this.debugDepth;
+    const term = grammar.resolveTerm(node);
     const scope = grammar.describeScope(node, depth);
 
     return {

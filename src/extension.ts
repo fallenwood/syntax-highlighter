@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { listGrammarLanguages } from './GrammarSource';
+import { getExtensionAssetPath } from './paths';
 import { TokensProvider } from "./TokensProvider";
 
 // Semantic token legend
@@ -49,20 +51,20 @@ const legend = buildLegend();
 
 // Extension activation
 export async function activate(context: vscode.ExtensionContext) {
+    const config = vscode.workspace.getConfiguration("syntax");
+    const grammarDir = getExtensionAssetPath("grammars");
+    const parsersDir = getExtensionAssetPath("parsers");
 
     // Languages
-    const availableGrammars: string[] = [];
-    fs.readdirSync(__dirname + "/../grammars/").forEach(name => {
-        availableGrammars.push(path.basename(name, ".json"));
-    });
+    const availableGrammars = listGrammarLanguages(grammarDir);
 
     const availableParsers: string[] = [];
-    fs.readdirSync(__dirname + "/../parsers/").forEach(name => {
+    fs.readdirSync(parsersDir).forEach(name => {
         availableParsers.push(path.basename(name, ".wasm"));
     });
 
     const enabledLangs: string[] =
-        vscode.workspace.getConfiguration("syntax").get("highlightLanguages")!;
+        config.get("highlightLanguages")!;
     const supportedLangs: { language: string }[] = [];
     availableGrammars.forEach(lang => {
         if (availableParsers.includes(lang) && enabledLangs.includes(lang)) {
@@ -80,7 +82,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register debug hover providers
     // Very useful tool for implementation and fixing of grammars
-    if (vscode.workspace.getConfiguration("syntax").get("debugHover")) {
+    if (config.get("debugHover")) {
         for (const lang of supportedLangs) {
             vscode.languages.registerHoverProvider(lang, engine);
         }

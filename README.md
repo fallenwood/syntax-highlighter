@@ -3,7 +3,7 @@
 #### Syntax highlighter based on [Tree-Sitter](https://tree-sitter.github.io/tree-sitter/).
 #### Languages:
 #### C++, C, Python, TypeScript, TypeScriptReact, JavaScript,
-#### Go, Rust, Php, Ruby, ShellScript, Bash, OCaml, Lua, C#, D
+#### Go, Rust, Php, Ruby, ShellScript, Bash, OCaml, C#, Elixir
 
 ![demo](images/demo.gif)
 
@@ -11,7 +11,7 @@
 * C++
 * C
 * C#
-* D
+* Elixir
 * Python
 * TypeScript
 * TypeScriptReact
@@ -23,7 +23,6 @@
 * ShellScript
 * Bash
 * OCaml
-* Lua
 * More to come...
 
 ## Description
@@ -134,6 +133,8 @@ List of enabled languages.
 If you want to disable {Syntax Highlighter} for certain languages and use standard
 coloring instead, just remove them from `syntax.highlightLanguages` list in your
 `settings.json`. By default all [supported languages]((#languages)) are enabled.
+
+Grammar definitions are sourced from Tree-sitter highlight queries in `grammars/*.scm`.
 
 ## [Build](BUILD.md)
 

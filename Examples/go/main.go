@@ -96,7 +96,7 @@ can include line breaks.` // Same string type.
 	// Slices (as well as maps and channels) have reference semantics.
 	s3_cpy := s3            // Both variables point to the same instance.
 	s3_cpy[0] = 0           // Which means both are updated.
-	fmt.Println(s3_cpy[0] == s3[0]) // true	
+	fmt.Println(s3_cpy[0] == s3[0]) // true
 
 	// Because they are dynamic, slices can be appended to on-demand.
 	// To append elements to a slice, the built-in append() function is used.
@@ -131,7 +131,7 @@ can include line breaks.` // Same string type.
 	file, _ := os.Create("output.txt")
 	fmt.Fprint(file, "This is how you write to a file, by the way")
 	file.Close()
-	
+
 	// Output of course counts as using a variable.
 	fmt.Println(s, c, a4, s3, d2, m)
 
@@ -150,7 +150,7 @@ func learnNamedReturns(x, y int) (z int) {
 
 // Go is fully garbage collected. It has pointers but no pointer arithmetic.
 // You can make a mistake with a nil pointer, but not by incrementing a pointer.
-// Unlike in C/Cpp taking and returning an address of a local variable is also safe. 
+// Unlike in C/Cpp taking and returning an address of a local variable is also safe.
 func learnMemory() (p, q *int) {
 	// Named return values p and q have type pointer to int.
 	p = new(int) // Built-in function new allocates memory.
@@ -161,7 +161,7 @@ func learnMemory() (p, q *int) {
 	return &s[3], &r     // & takes the address of an object.
 }
 
-// Use the aliased math library (see imports, above) 
+// Use the aliased math library (see imports, above)
 func expensiveComputation() float64 {
 	return m.Exp(10)
 }
