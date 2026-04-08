@@ -15,22 +15,27 @@ fs.readdirSync(__dirname + "/../grammars/").forEach((name: string) => {
 const langMap = {
   typescript: {
     module: ["typescript", "typescript"],
+    prebuiltModule: ["typescript"],
     output: "typescript",
   },
   typescriptreact: {
     module: ["typescript", "tsx"],
+    prebuiltModule: ["typescript"],
     output: "tsx",
   },
   ocaml: {
     module: ["ocaml", "ocaml"],
+    prebuiltModule: ["ocaml"],
     output: "ocaml",
   },
   shellscript: {
     module: ["bash"],
+    prebuiltModule: ["bash"],
     output: "bash",
   },
   csharp: {
     module: ["c-sharp"],
+    prebuiltModule: ["c-sharp"],
     output: "c_sharp",
   },
 } as any;
@@ -40,9 +45,10 @@ const parsersDir = path.resolve(path.join(__dirname, "..", "parsers"));
 if (!fs.existsSync(parsersDir)) {
   fs.mkdirSync(parsersDir);
 }
-for (let li of langs) {
-  const lang = li;
+
+for (const lang of langs) {
   let module = path.resolve(path.join(__dirname, "..", "node_modules", `tree-sitter-${lang}`));
+  let prebuiltModule = path.resolve(path.join(__dirname, "..", "node_modules", `tree-sitter-${lang}`));
   let output = "tree-sitter-" + lang + ".wasm";
 
   let mapping = langMap[lang];
@@ -56,7 +62,23 @@ for (let li of langs) {
       ...mapping.module.slice(1),
     );
 
+    prebuiltModule = path.join(
+      __dirname,
+      "..",
+      "node_modules",
+      "tree-sitter-" + mapping.prebuiltModule[0],
+      ...mapping.prebuiltModule.slice(1),
+    );
+
     output = "tree-sitter-" + mapping.output + ".wasm";
+  }
+
+  const prebuiltPath = path.join(prebuiltModule, output);
+
+  if (fs.existsSync(prebuiltPath)) {
+    console.log(`Copying prebuilt parser for ${lang} from ${prebuiltPath}`);
+    fs.copyFileSync(prebuiltPath, path.join(parsersDir, lang + ".wasm"));
+    continue;
   }
 
   console.log(`Compiling ${lang} parser with ${module} to ${output}`);
@@ -66,16 +88,16 @@ for (let li of langs) {
     continue;
   }
 
-  let executable = path.join(__dirname, "..", "node_modules", ".bin", "tree-sitter");
+  let treesitterExecutable = path.join(__dirname, "..", "node_modules", ".bin", "tree-sitter");
 
   if (os.platform() === "win32") {
-    executable += ".cmd";
+    treesitterExecutable += ".cmd";
   }
 
-  executable = path.resolve(executable);
+  treesitterExecutable = path.resolve(treesitterExecutable);
 
   function buildWasm(callback?: any) {
-    exec(`${executable} build-wasm ${module}`,
+    exec(`${treesitterExecutable} build --wasm ${module}`,
       (err: any) => {
         if (err) {
           console.error("Failed to build wasm for " + lang + ": " + err.message);
@@ -97,7 +119,7 @@ for (let li of langs) {
   }
 
   if (lang === "d") {
-    exec(`${executable} generate`, {
+    exec(`${treesitterExecutable} generate`, {
       cwd: module,
     }, (err: any) => {
       if (err) {

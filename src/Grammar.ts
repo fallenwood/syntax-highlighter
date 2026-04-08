@@ -1,24 +1,26 @@
 import * as vscode from 'vscode';
-import * as parser from 'web-tree-sitter';
+import Parser = require('web-tree-sitter');
 import * as jsonc from 'jsonc-parser';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { ComplexScopeTrie, ComplexScopeVariant } from './ComplexScopeTrie';
 import { getNodeType } from './common';
 
 // Grammar class
-const parserPromise = parser.init();
+const parserPromise = Parser.init();
 
 export class Grammar {
   // Parser
-  parser: parser | undefined;
+  parser: Parser | undefined;
 
   // Grammar
   readonly simpleTerms: { [sym: string]: string } = {};
   readonly complexTerms: string[] = [];
   readonly complexScopes: { [sym: string]: string } = {};
-  readonly complexDepth: number = 0;
-  readonly complexOrder: boolean = false;
+  readonly complexScopeTrie: ComplexScopeTrie;
+  readonly complexDepth: number;
+  readonly complexOrder: boolean;
 
   // Constructor
   constructor(private lang: string) {
@@ -38,28 +40,106 @@ export class Grammar {
       this.complexScopes[t] = grammarJson.complexScopes[t];
     }
 
-    for (const s in this.complexScopes) {
-      const depth = s.split(">").length;
+    this.complexScopeTrie = new ComplexScopeTrie(this.complexScopes);
+    this.complexDepth = this.complexScopeTrie.depth;
+    this.complexOrder = this.complexScopeTrie.ordered;
+  }
 
-      if (depth > this.complexDepth) {
-        this.complexDepth = depth;
+  private getComplexScopeOrder(node: Parser.SyntaxNode) {
+    let index = 0;
+    let sibling = node.previousSibling;
+
+    while (sibling) {
+      if (sibling.type === node.type) {
+        index++;
       }
 
-      if (s.indexOf("[") >= 0) {
-        this.complexOrder = true;
-      }
+      sibling = sibling.previousSibling;
     }
 
-    this.complexDepth--;
+    let rindex = -1;
+    sibling = node.nextSibling;
+
+    while (sibling) {
+      if (sibling.type === node.type) {
+        rindex--;
+      }
+
+      sibling = sibling.nextSibling;
+    }
+
+    return { index, rindex };
+  }
+
+  private getComplexScopeVariants(node: Parser.SyntaxNode): ComplexScopeVariant[] {
+    const type = getNodeType(node);
+
+    if (!this.complexOrder) {
+      return [{ scope: type, order: 0 }];
+    }
+
+    const { index, rindex } = this.getComplexScopeOrder(node);
+
+    return [
+      { scope: type, order: 0 },
+      { scope: `${type}[${index}]`, order: 1 },
+      { scope: `${type}[${rindex}]`, order: 2 },
+    ];
+  }
+
+  private getAncestorTypes(node: Parser.SyntaxNode, maxDepth: number) {
+    const ancestors: string[] = [];
+    let parent = node.parent;
+
+    for (let i = 0; i < maxDepth && parent; i++) {
+      ancestors.push(getNodeType(parent));
+      parent = parent.parent;
+    }
+
+    return ancestors;
+  }
+
+  private resolveComplexTerm(node: Parser.SyntaxNode, maxDepth: number) {
+    return this.complexScopeTrie.resolve(
+      this.getComplexScopeVariants(node),
+      this.getAncestorTypes(node, maxDepth),
+      maxDepth);
+  }
+
+  resolveTerm(node: Parser.SyntaxNode, maxDepth = this.complexDepth) {
+    const type = getNodeType(node);
+
+    if (!this.complexTerms.includes(type)) {
+      return this.simpleTerms[type];
+    }
+
+    return this.resolveComplexTerm(node, maxDepth);
+  }
+
+  describeScope(node: Parser.SyntaxNode, depth = this.complexDepth) {
+    let scope = getNodeType(node);
+    let parent = node.parent;
+
+    for (let i = 0; i < depth && parent; i++) {
+      scope = `${getNodeType(parent)} > ${scope}`;
+      parent = parent.parent;
+    }
+
+    if (!this.complexOrder) {
+      return scope;
+    }
+
+    const { index, rindex } = this.getComplexScopeOrder(node);
+    return `${scope}[${index}][${rindex}]`;
   }
 
   // Parser initialization
   async init() {
     // Load wasm parser
     await parserPromise;
-    this.parser = new parser();
+    this.parser = new Parser();
     const langFile = path.join(__dirname, "../parsers", this.lang + ".wasm");
-    const langObj = await parser.Language.load(langFile);
+    const langObj = await Parser.Language.load(langFile);
     this.parser.setLanguage(langObj);
   }
 
@@ -69,11 +149,11 @@ export class Grammar {
   }
 
   // Parse syntax tree
-  parse(tree: parser.Tree) {
+  parse(tree: Parser.Tree) {
     // Travel tree and peek terms
     const terms: { term: string; range: vscode.Range }[] = [];
-    const stack: parser.SyntaxNode[] = [];
-    let node = tree.rootNode.firstChild as parser.SyntaxNode | null | undefined;
+    const stack: Parser.SyntaxNode[] = [];
+    let node = tree.rootNode.firstChild as Parser.SyntaxNode | null | undefined;
 
     while (stack.length > 0 || node) {
       // Go deeper
@@ -85,70 +165,7 @@ export class Grammar {
       else {
         node = stack.pop()!;
 
-        const type = getNodeType(node);
-
-        // Simple one-level terms
-        let term: string | undefined = undefined;
-        if (!this.complexTerms.includes(type)) {
-          term = this.simpleTerms[type];
-        }
-        // Complex terms require multi-level analyzes
-        else {
-          // Build complex scopes
-          let desc = type;
-          let scopes = [desc];
-          let parent = node.parent;
-          for (let i = 0; i < this.complexDepth && parent; i++) {
-            const parentType = getNodeType(parent);
-
-            desc = `${parentType} > ${desc}`;
-            scopes.push(desc);
-            parent = parent.parent;
-          }
-
-          // If there is also order complexity
-          if (this.complexOrder) {
-            let index = 0;
-            let sibling = node.previousSibling;
-
-            while (sibling) {
-              if (sibling.type === node.type) {
-                index++;
-              }
-
-              sibling = sibling.previousSibling;
-            }
-
-            let rindex = -1;
-            sibling = node.nextSibling;
-
-            while (sibling) {
-              if (sibling.type === node.type) {
-                rindex--;
-              }
-
-              sibling = sibling.nextSibling;
-            }
-
-            const orderScopes: string[] = [];
-
-            for (let i = 0; i < scopes.length; i++) {
-              orderScopes.push(
-                scopes[i],
-                `${scopes[i]}[${index}]`,
-                `${scopes[i]}[${rindex}]`);
-            }
-
-            scopes = orderScopes;
-          }
-
-          // Use most complex scope
-          for (const d of scopes) {
-            if (d in this.complexScopes) {
-              term = this.complexScopes[d];
-            }
-          }
-        }
+        const term = this.resolveTerm(node);
 
         // If term is found add it
         if (term) {

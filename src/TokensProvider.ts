@@ -1,13 +1,12 @@
 import * as vscode from 'vscode';
-import * as parser from 'web-tree-sitter';
+import Parser = require('web-tree-sitter');
 
 import { Grammar } from './Grammar';
-import { getNodeType } from './common';
 
 // Semantic token provider
 export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vscode.HoverProvider {
   readonly grammars: { [lang: string]: Grammar } = {};
-  readonly trees: { [doc: string]: parser.Tree } = {};
+  readonly trees: { [doc: string]: Parser.Tree } = {};
   readonly supportedTerms: string[] = [];
   readonly debugDepth: number;
 
@@ -108,7 +107,7 @@ export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vs
     const grammar = this.grammars[doc.languageId];
     const tree = this.trees[uri];
 
-    const xy: parser.Point = { row: pos.line, column: pos.character };
+    const xy: Parser.Point = { row: pos.line, column: pos.character };
 
     const node = tree.rootNode.descendantForPosition(xy);
 
@@ -117,73 +116,11 @@ export class TokensProvider implements vscode.DocumentSemanticTokensProvider, vs
     }
 
     const depth = Math.max(grammar.complexDepth, this.debugDepth);
-
-    let type = getNodeType(node);
-
-    // TODO(fallenwood): merge similar codes
-    let term: string | undefined;
-    const isComplex = grammar.complexTerms.includes(type);
-
-    if (!isComplex) {
-      term = grammar.simpleTerms[type];
-    }
-
-    let parent = node.parent;
-    let scopes = [type];
-
-    for (let i = 0; i < depth && parent; i++) {
-      const parentType = getNodeType(parent);
-
-      type = `${parentType} > ${type}`;
-      scopes.push(type);
-      parent = parent.parent;
-    }
-
-    // If there is also order complexity
-    if (grammar.complexOrder) {
-      let index = 0;
-      let sibling = node.previousSibling;
-      while (sibling) {
-        if (sibling.type === node.type) {
-          index++;
-        }
-        sibling = sibling.previousSibling;
-      }
-
-      let rindex = -1;
-      sibling = node.nextSibling;
-      while (sibling) {
-        if (sibling.type === node.type) {
-          rindex--;
-        }
-
-        sibling = sibling.nextSibling;
-      }
-
-      type = `${type}[${index}][${rindex}]`;
-
-      const orderScopes: string[] = [];
-
-      for (let i = 0; i < scopes.length; i++) {
-        orderScopes.push(
-          scopes[i],
-          `${scopes[i]}[${index}]`,
-          `${scopes[i]}[${rindex}]`);
-      }
-
-      scopes = orderScopes;
-    }
-
-    if (isComplex) {
-      // Use most complex scope
-      for (const d of scopes) {
-        if (d in grammar.complexScopes) {
-          term = grammar.complexScopes[d];
-        }
-      }}
+    const term = grammar.resolveTerm(node, depth);
+    const scope = grammar.describeScope(node, depth);
 
     return {
-      contents: [type, `Term: ${term || ""}`],
+      contents: [scope, `Term: ${term || ""}`],
       range: new vscode.Range(
         node.startPosition.row, node.startPosition.column,
         node.endPosition.row, node.endPosition.column)
